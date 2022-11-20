@@ -24,7 +24,7 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
 router.post('/users', asyncHandler(async (req, res) => {
     try {
       await User.create(req.body);
-      res.redirect(201, "/");
+      res.location('/').status(201).end();
     } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         const errors = error.errors.map(err => err.message);
@@ -72,7 +72,7 @@ router.get('/courses/:id', asyncHandler(async (req, res, next) => {
 router.post('/courses', authenticateUser, asyncHandler(async (req, res) => {
     try {
         const course = await Course.create(req.body);
-        res.redirect(201, `/courses/${course.id}`);
+        res.location(`/courses/${course.id}`).status(201).end();
       } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
           const errors = error.errors.map(err => err.message);
@@ -95,7 +95,7 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async (req, res, next)
                 res.status(204);
                 res.end();
             } else {
-                res.status(401).json({ message: "Access Denied: User doesn't own the requested course" });
+                res.status(403).json({ message: "Access Denied: User doesn't own the requested course" });
             }
         } else {
             next(createError(404));
@@ -123,7 +123,7 @@ router.delete('/courses/:id', authenticateUser, asyncHandler(async (req, res, ne
                 res.status(204);
                 res.end();
             } else {
-                res.status(401).json({ message: "Access Denied: User doesn't own the requested course" });
+                res.status(403).json({ message: "Access Denied: User doesn't own the requested course" });
             }
         } else {
             next(createError(404));
